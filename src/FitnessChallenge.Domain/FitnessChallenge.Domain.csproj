@@ -1,9 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+  <!-- This project depends on nothing but the base class library, on purpose:
+       the scoring engine must be testable without a database or an HTTP host.
+       Anything needing persistence or the web framework belongs in
+       FitnessChallenge.Api. See docs/contract.md. -->
 
 </Project>
