@@ -121,7 +121,7 @@ Registers a user.
 { "firstName": "Ana", "lastName": "Horvat" }
 ```
 
-- **201 Created** — `Location` header plus `{ "id": "<guid>" }`
+- **201 Created** — `{ "id": "<guid>" }`
 - **400** — either name missing, blank, whitespace only, or over 100 characters
 - **409 Conflict** — a user with the same name already exists
 
@@ -158,6 +158,13 @@ Ingests one activity and stores its points.
 
 Points are computed **once, at ingest**, and stored. The read side never
 recomputes them.
+
+### No `Location` header on either creation
+
+Neither a single user nor a single activity has a URL of its own — the contract exposes a user
+list and a per-user activity list, nothing addressable per resource. A `Location` header would
+have to point at a collection or at nothing, so both creations return 201 with the identifier in
+the body instead.
 
 ### `GET /api/sports`
 
@@ -330,8 +337,13 @@ would trigger it.
   section. Recomputation is correct and cheap at this size.
 - **Per-user timezones** — would change the registration contract the assignment
   specified. See section 2.
-- **Docker and CI** — the README's local setup is the deliverable. Neither
-  affects the code under review.
+- **CI** — the README's local setup is the deliverable, and a pipeline changes
+  nothing about the code under review.
+
+Docker was originally listed here and has been moved into scope. The project needs
+.NET 10 and Node 22; if a reviewer has neither, `dotnet run` fails before any of
+this matters. `docker compose up` removes that risk. It is packaging rather than
+behaviour, so it is built last, against the finished application.
 - **MediatR, AutoMapper, a repository layer over EF Core** — each adds
   indirection without removing any. `DbContext` already is the repository.
 - **FluentAssertions** — version 8 moved to a paid licence for commercial use.
