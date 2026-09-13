@@ -1,0 +1,65 @@
+<section class="card">
+  <h2 class="card-title">Log an activity</h2>
+  <p class="card-note">The sports and the measurement each one needs come from the API.</p>
+
+  @if (!current.id()) {
+    <p class="empty">Choose a person above first.</p>
+  } @else {
+    <form (ngSubmit)="submit()">
+      <label>
+        <span>What did you do?</span>
+        <select [ngModel]="selectedKey()" (ngModelChange)="selectedKey.set($event)" name="sport">
+          @for (sport of sports(); track sport.label) {
+            <option [value]="sport.sport ?? ''">{{ sport.label }}</option>
+          }
+        </select>
+      </label>
+
+      @if (selected(); as sport) {
+        <label>
+          <span>How much?</span>
+          <input [ngModel]="amount()" (ngModelChange)="amount.set($event)" name="amount"
+                 [placeholder]="sport.metric === 'duration' ? 'mm:ss' : sport.unit"
+                 [attr.inputmode]="sport.metric === 'duration' ? 'text' : 'decimal'" />
+          <em>{{ sport.pointsPerUnit }} points per {{ sport.metric === 'count' ? 'step' : sport.unit }}</em>
+        </label>
+      }
+
+      <label>
+        <span>When?</span>
+        <input type="datetime-local" [ngModel]="when()" (ngModelChange)="when.set($event)" name="when" />
+      </label>
+
+      <div class="submit">
+        <button class="btn-primary" type="submit" [disabled]="saving() || !amount()">Log activity</button>
+
+        @if (preview() !== null) {
+          <p class="preview">+{{ preview()!.toLocaleString() }} pts</p>
+        }
+      </div>
+    </form>
+
+    @if (saved() !== null) {
+      <div class="result" role="status">
+        <strong>+{{ saved()!.toLocaleString() }} points</strong>
+
+        @if (move(); as change) {
+          <p class="climb">
+            <span class="from">#{{ change.from }}</span>
+            <span class="arrow" aria-hidden="true">→</span>
+            <span class="to">#{{ change.to }}</span>
+            @if (change.passed) {
+              <em>You overtook {{ change.passed }}.</em>
+            }
+          </p>
+        } @else {
+          <p class="held">Logged. Your place is unchanged — keep the momentum going.</p>
+        }
+      </div>
+    }
+
+    @for (error of errors(); track error) {
+      <p class="error">{{ error }}</p>
+    }
+  }
+</section>

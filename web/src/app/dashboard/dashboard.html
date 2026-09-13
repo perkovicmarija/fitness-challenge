@@ -1,0 +1,130 @@
+@if (!current.id()) {
+  <section class="card">
+    <p class="empty">Choose a person above to see their dashboard.</p>
+  </section>
+} @else if (loading() && !data()) {
+  <section class="card"><p class="empty">Loading…</p></section>
+} @else if (data(); as dashboard) {
+  <h2 class="section">Your progress</h2>
+
+  <section class="stats">
+    <div class="card hero">
+      <h2 class="card-title">Total points</h2>
+      <strong>{{ dashboard.totalPoints.toLocaleString() }}</strong>
+
+      @if (standing(); as place) {
+        <span class="place" [class.first]="place.rank === 1">
+          #{{ place.rank }} <i>of {{ place.of }}</i>
+        </span>
+      } @else {
+        <span class="place">Not on the board yet</span>
+      }
+    </div>
+
+    <div class="card tile">
+      <h2 class="card-title">Activities</h2>
+      <strong>{{ activities().length }}</strong>
+      <span>logged</span>
+    </div>
+
+    <div class="card tile">
+      <h2 class="card-title">Current streak</h2>
+      <strong>{{ dashboard.currentStreakDays }}</strong>
+      <span>{{ dashboard.currentStreakDays === 1 ? 'day' : 'days' }} in a row</span>
+    </div>
+  </section>
+
+  @if (recapLoading() || recap() || recapFailed()) {
+    <section class="card recap">
+      <h2 class="card-title"><span aria-hidden="true">✦</span> Your week in review</h2>
+
+      @if (recapLoading()) {
+        <p class="skeleton-line"></p>
+        <p class="skeleton-line short"></p>
+      } @else if (recap(); as said) {
+        <p class="said">{{ said }}</p>
+      } @else {
+        <p class="said muted">AI insights are temporarily unavailable. Everything below is computed by the app.</p>
+      }
+
+      <p class="note">
+        AI insights use your challenge and activity data. Scores and rankings are calculated by the app.
+      </p>
+    </section>
+  }
+
+  <h2 class="section">Your habits</h2>
+
+  <section class="card">
+    <h2 class="card-title">Consistency</h2>
+    <p class="card-note">Every day of the last twenty weeks. Showing up beats one big effort.</p>
+
+    <div class="habits">
+      <app-heatmap [data]="dashboard.perDay" />
+
+      @if (habits(); as habit) {
+
+        <dl>
+          <div>
+            <dt>Days trained</dt>
+            <dd>{{ habit.activeDays }} <i>of {{ habit.totalDays }}</i></dd>
+          </div>
+          <div>
+            <dt>Busiest day</dt>
+            <dd>{{ habit.busiestWeekday }}</dd>
+          </div>
+          <div>
+            <dt>Average when you train</dt>
+            <dd>{{ habit.averageOnActiveDays.toLocaleString() }} <i>pts</i></dd>
+          </div>
+          <div>
+            <dt>Best single day</dt>
+            <dd>{{ habit.best.points.toLocaleString() }} <i>pts · {{ habit.best.date }}</i></dd>
+          </div>
+        </dl>
+      }
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">Activity over time</h2>
+    <p class="card-note">Points earned per day. Hover a column for the exact figure.</p>
+    <app-column-chart [data]="dashboard.perDay" />
+  </section>
+
+  <h2 class="section">Your preferences</h2>
+
+  <section class="card">
+    <h2 class="card-title">Your activity mix</h2>
+    <p class="card-note">Which sports your points come from, against the rest of the challenge.</p>
+    <app-dumbbell-chart [mine]="dashboard.perSport" [field]="dashboard.fieldAverage" />
+  </section>
+
+  <h2 class="section">History</h2>
+
+  <section class="card quiet">
+    <h2 class="card-title">Activity history</h2>
+    <p class="card-note">
+      @if (activities().length > recentCount) {
+        The {{ recentCount }} most recent of {{ activities().length }} logged.
+      } @else {
+        {{ activities().length }} logged.
+      }
+    </p>
+
+    @if (activities().length === 0) {
+      <p class="empty">No activities logged yet.</p>
+    } @else {
+      <ul class="history">
+        @for (activity of recent(); track activity.id) {
+          <li>
+            <span class="date">{{ activity.localDate }}</span>
+            <span class="sport">{{ sportLabel(activity.sport) }}</span>
+            <span class="amount">{{ measurement(activity) }}</span>
+            <span class="pts">{{ activity.points.toLocaleString() }} pts</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+}
