@@ -1,0 +1,205 @@
+<section class="card hero" [attr.data-state]="state()">
+  @if (challenge(); as event) {
+    <header class="head">
+      <div>
+        <p class="eyebrow">{{ event.name }}</p>
+        <p class="phase">
+          @switch (state()) {
+            @case ('upcoming') { Starts {{ event.startsOn }} }
+            @case ('final') { The last day to earn points }
+            @case ('complete') { Finished {{ event.endsOn }} }
+            @default { Day {{ event.day }} of {{ event.totalDays }} }
+          }
+        </p>
+      </div>
+
+      <span class="status">{{ statusLabel() }}</span>
+    </header>
+
+    <div
+      class="track"
+      role="progressbar"
+      aria-label="Challenge progress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="percent()">
+      <span [style.width.%]="percent()"></span>
+    </div>
+
+    <p class="meta">
+      {{ rows().length }} {{ rows().length === 1 ? 'participant' : 'participants' }}
+      @if (activeToday() > 0) {
+        · {{ activeToday() }} of {{ rows().length }} active today
+      }
+      @if (state() === 'live') {
+        · {{ event.daysLeft }} {{ event.daysLeft === 1 ? 'day' : 'days' }} left
+      }
+    </p>
+  }
+
+  @if (me(); as mine) {
+    <dl class="standing">
+      <div>
+        <dt>{{ state() === 'complete' ? 'Final rank' : 'Your rank' }}</dt>
+        <dd [class.first]="mine.rank === 1">#{{ mine.rank }}</dd>
+      </div>
+
+      <div>
+        <dt>Points</dt>
+        <dd>{{ mine.totalPoints.toLocaleString() }}</dd>
+      </div>
+
+      @if (chase(); as target) {
+        <div>
+
+          <dt>Your next move</dt>
+          <dd class="gap">{{ target.points.toLocaleString() }} <small>pts</small></dd>
+          <p class="who">to #{{ mine.rank - 1 }} · {{ target.name }}</p>
+        </div>
+      } @else {
+        <div>
+          <dt>Position</dt>
+          <dd class="first">Leading</dd>
+        </div>
+      }
+    </dl>
+
+    @if (change(); as moved) {
+      <div class="why">
+        <button type="button" class="ask" (click)="explain()" [attr.aria-expanded]="showWhy()">
+          <span aria-hidden="true">✦</span>
+          #{{ moved.previousRank }} → #{{ moved.currentRank }} this week · Why?
+        </button>
+
+        @if (showWhy()) {
+          <div class="panel">
+            <dl>
+              <div>
+                <dt>You</dt>
+                <dd>+{{ moved.myPointsThisWeek.toLocaleString() }}</dd>
+              </div>
+              @if (moved.mover && moved.moverPointsThisWeek !== null) {
+                <div>
+                  <dt>{{ moved.mover }}</dt>
+                  <dd>+{{ moved.moverPointsThisWeek.toLocaleString() }}</dd>
+                </div>
+                <div>
+                  <dt>Difference</dt>
+                  <dd>{{ (moved.myPointsThisWeek - moved.moverPointsThisWeek).toLocaleString() }}</dd>
+                </div>
+              }
+            </dl>
+
+            @if (explaining()) {
+              <p class="skeleton-line"></p>
+              <p class="skeleton-line short"></p>
+            } @else if (explanation(); as sentence) {
+              <p class="said">{{ sentence }}</p>
+            } @else if (explanationFailed()) {
+              <p class="said muted">AI insights are temporarily unavailable. The figures above are computed by the app.</p>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @if (state() !== 'complete') {
+      <div class="actions">
+        <a class="btn-primary" routerLink="/log">Log an activity →</a>
+
+        @if (chase(); as target) {
+          <a class="cta" routerLink="/coach">Not sure what to do? Ask the coach</a>
+        }
+      </div>
+    }
+  } @else if (!loading()) {
+    <p class="join">
+      @if (current.id()) {
+        You are not on the board yet. One activity puts you on it.
+      } @else {
+        Choose a person above to see where they stand.
+      }
+    </p>
+
+    @if (current.id()) {
+      <a class="btn-primary" routerLink="/log">Log your first activity →</a>
+    }
+  }
+</section>
+
+@if (race().length > 1) {
+  <section class="card race">
+    <h2 class="card-title">Your race</h2>
+    <p class="card-note">The places either side of you, and what separates them.</p>
+
+    <ol>
+      @for (row of race(); track row.userId; let first = $first) {
+        @if (!first) {
+          <li class="between">
+            <span aria-hidden="true">↓</span>
+            {{ row.pointsToOvertake!.toLocaleString() }} pts
+          </li>
+        }
+
+        <li class="runner" [class.me]="isMe(row)">
+          <span class="rank" [class.first]="row.rank === 1">#{{ row.rank }}</span>
+          <span class="avatar {{ row.badge }}" aria-hidden="true">{{ row.initials }}</span>
+          <span class="name">
+            {{ row.firstName }} {{ row.lastName }}
+            @if (isMe(row)) { <b>you</b> }
+          </span>
+          <span class="points">{{ row.totalPoints.toLocaleString() }}</span>
+        </li>
+      }
+    </ol>
+  </section>
+}
+
+<section class="card">
+  <h2 class="card-title">Global leaderboard</h2>
+  <p class="card-note">Ranked on points earned. Movement is against a week ago.</p>
+
+  @if (loading()) {
+    <ol class="skeleton" aria-hidden="true">
+      @for (row of [1, 2, 3, 4, 5]; track row) {
+        <li></li>
+      }
+    </ol>
+    <p class="empty">Loading the ranking…</p>
+  } @else if (rows().length === 0) {
+    <p class="empty">Nobody has logged an activity yet. Be the first.</p>
+  } @else {
+    <ol>
+      @for (row of rows(); track row.userId) {
+        <li [class.me]="isMe(row)">
+          <span class="rank" [class.first]="row.rank === 1">{{ row.rank }}</span>
+
+          <span class="trend">
+            @if (row.rankDelta === null) {
+              <em class="new">new</em>
+            } @else if (row.rankDelta > 0) {
+              <em class="up">▲ {{ row.rankDelta }}</em>
+            } @else if (row.rankDelta < 0) {
+              <em class="down">▼ {{ -row.rankDelta }}</em>
+            } @else {
+              <em class="flat">–</em>
+            }
+          </span>
+
+          <span class="name">
+            <span class="avatar {{ row.badge }}" aria-hidden="true">{{ row.initials }}</span>
+            {{ row.firstName }} {{ row.lastName }}
+            @if (isMe(row)) { <b>you</b> }
+          </span>
+
+          <span class="points">
+            {{ row.totalPoints.toLocaleString() }}
+            @if (row.gap; as gap) {
+              <small [class.chase]="gap.mine">{{ gap.text }}</small>
+            }
+          </span>
+        </li>
+      }
+    </ol>
+  }
+</section>

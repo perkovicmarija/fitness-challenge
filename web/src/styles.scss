@@ -1,1 +1,159 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  color-scheme: dark;
+
+  --surface-0: #0a0c0f;
+  --surface-1: #12161b;
+  --surface-2: #181d23;
+  --border: #252c33;
+
+  --text-primary: #f5f7fa;
+  --text-secondary: #8e98a5;
+  --text-muted: #79828e;
+
+  --accent: #a3ff3f;
+  --on-accent: #0a0c0f;
+
+  --series-1: #5b8cff;
+
+  --series-2: #a9b2bd;
+
+  --gold: #ffc857;
+
+  --up: #32d583;
+  --down: #ff5c67;
+
+  --heat-0: #181d23;
+  --heat-1: #1e3358;
+  --heat-2: #2a4e8c;
+  --heat-3: #3c6fc4;
+  --heat-4: #5b8cff;
+
+  --radius: 14px;
+  --radius-control: 10px;
+  --radius-pill: 999px;
+
+  --gap: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font: 15px/1.5 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+
+button, select, input {
+  font: inherit;
+  color: inherit;
+}
+
+:where(a, button, select, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--series-1);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.card {
+
+  min-width: 0;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.card-note {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.stats {
+  display: grid;
+  gap: var(--gap);
+  min-width: 0;
+}
+
+.tile strong {
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  margin: 6px 0 2px;
+}
+
+.tile span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.btn-primary {
+  display: inline-block;
+  border: none;
+  border-radius: var(--radius-control);
+  padding: 11px 18px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover { filter: brightness(1.06); }
+.btn-primary:disabled { opacity: 0.4; cursor: default; filter: none; }
+
+.btn-quiet {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  padding: 10px 16px;
+  background: var(--surface-2);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-quiet:hover { border-color: var(--series-1); }
+.btn-quiet:disabled { opacity: 0.4; cursor: default; border-color: var(--border); }
+
+.card.hero {
+  padding: 26px 24px;
+}
+
+.card.quiet {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 24px 0;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

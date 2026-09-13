@@ -1,1 +1,17 @@
-<router-outlet />
+<header>
+  <div class="bar">
+    <h1>Fitness Challenge</h1>
+    <app-user-picker />
+  </div>
+
+  <nav>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Leaderboard</a>
+    <a routerLink="/me" routerLinkActive="active">My dashboard</a>
+    <a routerLink="/log" routerLinkActive="active">Log activity</a>
+    <a routerLink="/coach" routerLinkActive="active">AI coach</a>
+  </nav>
+</header>
+
+<main>
+  <router-outlet />
+</main>

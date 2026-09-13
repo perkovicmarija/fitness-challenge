@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { UserPicker } from './user-picker/user-picker';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, UserPicker],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',
