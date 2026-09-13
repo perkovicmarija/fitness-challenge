@@ -8,6 +8,21 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
+# The Azure credentials live in one .env file, read here and by docker compose. Without it the
+# app runs exactly the same and only the AI chat is switched off. See .env.example.
+if [ -f .env ]; then
+    set -a
+    . ./.env
+    set +a
+fi
+
+export Coach__Endpoint="${COACH_ENDPOINT:-}"
+export Coach__ApiKey="${COACH_API_KEY:-}"
+export Coach__Deployment="${COACH_DEPLOYMENT:-}"
+
+# Demo data, written once into an empty database. An existing database is left alone.
+export Seed=true
+
 API_URL="http://localhost:5032"
 WEB_URL="http://localhost:4200"
 

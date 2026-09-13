@@ -5,6 +5,9 @@ obj/
 *.suo
 .vs/
 
+# Azure credentials. .env.example is the committed template.
+.env
+
 # Local database
 *.db
 *.db-shm
@@ -17,3 +20,4 @@ dist/
 
 # OS
 .DS_Store
+docs/contract.md
