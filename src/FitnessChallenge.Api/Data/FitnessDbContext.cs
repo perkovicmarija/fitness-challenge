@@ -8,6 +8,8 @@ public class FitnessDbContext(DbContextOptions<FitnessDbContext> options) : DbCo
 
     public DbSet<Activity> Activities => Set<Activity>();
 
+    public DbSet<Challenge> Challenges => Set<Challenge>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>(user =>
@@ -18,11 +20,11 @@ public class FitnessDbContext(DbContextOptions<FitnessDbContext> options) : DbCo
             user.HasIndex(u => u.NormalizedName).IsUnique();
         });
 
+        modelBuilder.Entity<Challenge>(challenge => challenge.Property(c => c.Name).HasMaxLength(100));
+
         modelBuilder.Entity<Activity>(activity =>
         {
-            // Three decimal places matches the assignment's own 42.195. Finer precision cannot
-            // change a point total, because a thousandth of a kilometre is at most 0.1 points
-            // and the flooring discards it.
+
             activity.Property(a => a.Distance).HasPrecision(9, 3);
             activity.Property(a => a.Duration).HasMaxLength(16);
             activity.HasIndex(a => new { a.UserId, a.OccurredAtUtc });

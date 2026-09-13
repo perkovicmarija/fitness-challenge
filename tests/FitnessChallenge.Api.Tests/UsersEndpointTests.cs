@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using FitnessChallenge.Api.Contracts;
+using FitnessChallenge.Api.DTO;
 
 namespace FitnessChallenge.Api.Tests;
 
@@ -12,7 +12,7 @@ public class UsersEndpointTests
         using var factory = new FitnessApiFactory();
         var client = factory.CreateClient();
 
-        var response = await client.PostAsJsonAsync("/api/users", new { firstName = "Ana", lastName = "Horvat" });
+        var response = await client.PostAsJsonAsync("/api/users", new { firstName = "Anna", lastName = "Wilson" });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
@@ -26,35 +26,31 @@ public class UsersEndpointTests
         using var factory = new FitnessApiFactory();
         var client = factory.CreateClient();
 
-        await client.PostAsJsonAsync("/api/users", new { firstName = "Ana", lastName = "Horvat" });
-        var second = await client.PostAsJsonAsync("/api/users", new { firstName = "Ana", lastName = "Horvat" });
+        await client.PostAsJsonAsync("/api/users", new { firstName = "Anna", lastName = "Wilson" });
+        var second = await client.PostAsJsonAsync("/api/users", new { firstName = "Anna", lastName = "Wilson" });
 
         Assert.Equal(HttpStatusCode.Conflict, second.StatusCode);
     }
 
-    /// <summary>
-    /// Casing and stray whitespace must not be enough to register the same person twice, or the
-    /// leaderboard shows them as two competitors.
-    /// </summary>
     [Theory]
-    [InlineData("ana", "horvat")]
-    [InlineData("  Ana  ", " Horvat ")]
-    [InlineData("ANA", "HoRvAt")]
+    [InlineData("anna", "wilson")]
+    [InlineData("  Anna  ", " Wilson ")]
+    [InlineData("ANNA", "WiLsOn")]
     public async Task RegisteringAVariantOfAnExistingNameConflicts(string firstName, string lastName)
     {
         using var factory = new FitnessApiFactory();
         var client = factory.CreateClient();
 
-        await client.PostAsJsonAsync("/api/users", new { firstName = "Ana", lastName = "Horvat" });
+        await client.PostAsJsonAsync("/api/users", new { firstName = "Anna", lastName = "Wilson" });
         var second = await client.PostAsJsonAsync("/api/users", new { firstName, lastName });
 
         Assert.Equal(HttpStatusCode.Conflict, second.StatusCode);
     }
 
     [Theory]
-    [InlineData("", "Horvat")]
-    [InlineData("   ", "Horvat")]
-    [InlineData("Ana", "")]
+    [InlineData("", "Wilson")]
+    [InlineData("   ", "Wilson")]
+    [InlineData("Anna", "")]
     public async Task RegisteringABlankNameIsRejected(string firstName, string lastName)
     {
         using var factory = new FitnessApiFactory();
@@ -71,12 +67,12 @@ public class UsersEndpointTests
         using var factory = new FitnessApiFactory();
         var client = factory.CreateClient();
 
-        await client.PostAsJsonAsync("/api/users", new { firstName = "  Ana ", lastName = "de Vries" });
+        await client.PostAsJsonAsync("/api/users", new { firstName = "  Anna ", lastName = "de Vries" });
 
         var users = await client.GetFromJsonAsync<List<UserResponse>>("/api/users");
 
         var user = Assert.Single(users!);
-        Assert.Equal("Ana", user.FirstName);
+        Assert.Equal("Anna", user.FirstName);
         Assert.Equal("de Vries", user.LastName);
     }
 }

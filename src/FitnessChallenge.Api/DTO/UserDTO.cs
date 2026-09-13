@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FitnessChallenge.Api.Contracts;
+namespace FitnessChallenge.Api.DTO;
 
 public sealed record RegisterUserRequest
 {

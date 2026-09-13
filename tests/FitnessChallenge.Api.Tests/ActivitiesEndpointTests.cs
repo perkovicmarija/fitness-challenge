@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
-using FitnessChallenge.Api.Contracts;
+using FitnessChallenge.Api.DTO;
 
 namespace FitnessChallenge.Api.Tests;
 
@@ -28,7 +28,6 @@ public class ActivitiesEndpointTests
         Assert.Equal(4219, activity!.Points);
     }
 
-    /// <summary>The invalid example printed in the assignment: swimming submitted with a distance.</summary>
     [Fact]
     public async Task TheAssignmentsOwnInvalidExampleIsRejected()
     {
@@ -47,11 +46,6 @@ public class ActivitiesEndpointTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    /// <summary>
-    /// The day an activity belongs to comes from the offset the client sent, not from UTC.
-    /// 01:30 in a UTC+2 zone is still the previous day in UTC, but it is the 1st to the person
-    /// who trained — and the heatmap, the volume chart and the streak all count that day.
-    /// </summary>
     [Fact]
     public async Task TheLocalDateComesFromTheSubmittedOffsetNotFromUtc()
     {
@@ -146,10 +140,6 @@ public class ActivitiesEndpointTests
         Assert.Equal(3, activity!.Points);
     }
 
-    /// <summary>
-    /// Rejecting unknown fields is what keeps "exactly one measurement" meaningful — otherwise a
-    /// typo like "distnace" is silently ignored rather than reported.
-    /// </summary>
     [Fact]
     public async Task ABodyCarryingAnUnknownFieldIsRejected()
     {
@@ -176,7 +166,7 @@ public class ActivitiesEndpointTests
 
     private static async Task<Guid> RegisterAsync(HttpClient client)
     {
-        var response = await client.PostAsJsonAsync("/api/users", new { firstName = "Ana", lastName = "Horvat" });
+        var response = await client.PostAsJsonAsync("/api/users", new { firstName = "Anna", lastName = "Wilson" });
         response.EnsureSuccessStatusCode();
 
         var created = await response.Content.ReadFromJsonAsync<RegisteredUserResponse>();

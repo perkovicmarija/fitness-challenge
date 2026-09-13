@@ -1,0 +1,178 @@
+@if (!current.id()) {
+  <section class="card">
+    <p class="empty">Choose a person above to get advice.</p>
+  </section>
+} @else if (loading() && !facts()) {
+  <section class="card"><p class="empty">Loading…</p></section>
+} @else if (facts(); as coach) {
+  <section class="card brief">
+    @if (coach.challenge; as event) {
+      <p class="eyebrow">
+        {{ event.name }}
+        @if (event.hasEnded) {
+          · finished
+        } @else {
+          · day {{ event.day }} of {{ event.totalDays }}
+          @if (event.daysLeft === 0) {
+            · final day
+          } @else {
+            · {{ event.daysLeft }} {{ event.daysLeft === 1 ? 'day' : 'days' }} left
+          }
+        }
+      </p>
+    }
+
+    @if (coach.rank === null) {
+      <h2>You haven't logged anything yet.</h2>
+      <p class="line">{{ coach.competitors }} people are competing. One activity puts you on the board.</p>
+    } @else if (coach.nextRankName && coach.pointsToPassNextRank !== null) {
+      <h2>
+        <b>{{ coach.nextRankName }}</b> is {{ coach.pointsToPassNextRank.toLocaleString() }} points ahead.
+      </h2>
+
+      <p class="line">You do {{ coach.sports[0].label.toLowerCase() }} more than anything else.</p>
+    } @else {
+      <h2>Nobody is ahead of you.</h2>
+      <p class="line">
+        You lead the challenge. The goal now is holding it, not closing a gap.
+      </p>
+    }
+
+    <p class="line muted">
+      Ranked #{{ coach.rank }} of {{ coach.competitors }}.
+      @if (coach.bestWeekday) {
+        You earn more points on {{ coach.bestWeekday }}s than on any other day.
+      }
+    </p>
+
+    <p class="line muted">
+      Last 7 days: {{ coach.activitiesLastSevenDays }}
+      {{ coach.activitiesLastSevenDays === 1 ? 'activity' : 'activities' }},
+      {{ coach.pointsLastSevenDays.toLocaleString() }} points. Your usual week is
+      {{ coach.averageWeeklyPoints.toLocaleString() }}.
+    </p>
+
+  </section>
+
+  @if (coach.leadOverNextRank !== null) {
+
+    <section class="card move">
+      <h2 class="card-title">Protect your lead</h2>
+
+      <div class="pick">
+        <div class="what">
+          <strong>{{ coach.leadOverNextRank.toLocaleString() }} <small>pts</small></strong>
+          <span>clear of #2</span>
+        </div>
+
+        <p class="closes">
+          Your usual week is {{ coach.averageWeeklyPoints.toLocaleString() }} points; the last seven
+          days came to {{ coach.pointsLastSevenDays.toLocaleString() }}. Anything you log adds to
+          the margin.
+        </p>
+
+        <a class="btn-primary" routerLink="/log">Log an activity →</a>
+      </div>
+
+      @if (coach.sports[0].sessions > 0) {
+        <p class="other">
+          Best return per session: <b>{{ coach.sports[0].label.toLowerCase() }}</b>, at
+          {{ coach.sports[0].averagePoints.toLocaleString() }} points a time.
+        </p>
+      }
+    </section>
+  }
+
+  @if (coach.recommended; as pick) {
+
+    <section class="card move">
+      <h2 class="card-title">Recommended move</h2>
+
+      <div class="pick">
+        <div class="what">
+          <strong>{{ pick.quantity.toLocaleString() }} <small>{{ pick.unit }}</small></strong>
+          <span>{{ pick.label }}</span>
+        </div>
+
+        <p class="closes">
+          Earns {{ coach.pointsToPassNextRank!.toLocaleString() }} points, which closes the current
+          gap to rank {{ coach.rank! - 1 }}.
+        </p>
+
+        <a class="btn-primary" routerLink="/log" [queryParams]="{ sport: pick.sport ?? '' }">
+          Log {{ pick.label.toLowerCase() }} →
+        </a>
+      </div>
+
+      @if (alternative(); as other) {
+        <p class="other">
+          Lower intensity: <b>{{ other.quantity.toLocaleString() }} {{ other.unit }}</b>
+          of {{ other.label.toLowerCase() }} earns the same, over a longer session.
+        </p>
+      }
+    </section>
+  }
+
+  <section class="card">
+    <h2 class="card-title">Ask the coach</h2>
+    <p class="card-note">
+      Written by a language model from your challenge and activity data.
+      <span
+        class="how"
+        tabindex="0"
+        title="Every figure is calculated by the app and quoted exactly; the model works out none of its own. Other competitors are sent as ranks, never by name.">
+        How it works
+      </span>
+    </p>
+
+    @if (unavailable()) {
+      <p class="empty">
+        The AI coach is switched off — no Azure credentials are configured. Everything above is
+        computed by the app and does not need it.
+      </p>
+    } @else {
+      @if (messages().length > 0 || thinking()) {
+        <ol class="thread">
+          @for (message of messages(); track $index) {
+            <li [class.mine]="message.role === 'user'">{{ message.text }}</li>
+          }
+          @if (thinking()) {
+            <li class="pending">Thinking…</li>
+          }
+        </ol>
+      }
+
+      @if (error(); as failure) {
+        <p class="error">{{ failure }}</p>
+      }
+
+      @if (suggestions().length > 0 && !thinking() && !full()) {
+        <ul class="starters">
+          @for (starter of suggestions(); track starter) {
+            <li><button type="button" (click)="send(starter)">{{ starter }}</button></li>
+          }
+        </ul>
+      }
+
+      <form (ngSubmit)="send(draft())">
+        <input
+          name="draft"
+          autocomplete="off"
+          placeholder="Ask how to catch up…"
+          [maxlength]="maxLength"
+          [disabled]="full()"
+          [ngModel]="draft()"
+          (ngModelChange)="draft.set($event)" />
+        <button class="btn-quiet" type="submit" [disabled]="thinking() || full() || draft().trim().length === 0">Ask</button>
+      </form>
+
+      @if (full()) {
+        <p class="card-note">This conversation has run long enough. Reload the page to start a new one.</p>
+      }
+    }
+  </section>
+} @else {
+  <section class="card">
+    <p class="empty">No advice for this person yet.</p>
+  </section>
+}

@@ -1,4 +1,4 @@
-using FitnessChallenge.Api.Contracts;
+using FitnessChallenge.Api.DTO;
 using FitnessChallenge.Api.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +20,6 @@ public class UsersController(FitnessDbContext db) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        // 409 rather than 400: the request is well formed, it just collides with someone who is
-        // already registered.
         if (await db.Users.AnyAsync(u => u.NormalizedName == normalizedName, cancellationToken))
         {
             return Problem(
@@ -43,7 +41,6 @@ public class UsersController(FitnessDbContext db) : ControllerBase
         return StatusCode(StatusCodes.Status201Created, new RegisteredUserResponse(user.Id));
     }
 
-    /// <summary>The dashboard is a view of one user, so the frontend needs someone to choose.</summary>
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetAll(CancellationToken cancellationToken) =>
         await db.Users

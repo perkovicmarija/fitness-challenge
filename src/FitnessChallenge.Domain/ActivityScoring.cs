@@ -1,13 +1,5 @@
 namespace FitnessChallenge.Domain;
 
-/// <summary>
-/// Validates a submitted activity against <see cref="ActivityRules"/> and converts it to points.
-/// </summary>
-/// <remarks>
-/// Validation and scoring are one step on purpose: both answer the same question — does this
-/// submission carry the one measurement its activity type is scored on? Splitting them would
-/// allow scoring to be called on a submission that was never checked.
-/// </remarks>
 public static class ActivityScoring
 {
     public static ScoringResult Score(Sport sport, decimal? distance, string? duration, int? steps)
@@ -39,13 +31,6 @@ public static class ActivityScoring
         }
     }
 
-    /// <remarks>
-    /// Every metric awards <c>floor(quantity × rate)</c>. The rounding the assignment describes
-    /// for duration and steps has already happened by this point: "mm:ss" parses to whole
-    /// minutes, and a step is worth 0.01 points so incomplete hundreds fall away in the floor.
-    /// Distance is the only metric whose fraction survives this far, which is exactly what the
-    /// assignment asks for.
-    /// </remarks>
     private static ScoringResult Award(decimal quantity, ActivityRule rule)
     {
         var points = decimal.Floor(quantity * rule.PointsPerUnit);
@@ -55,7 +40,6 @@ public static class ActivityScoring
             : ScoringResult.Success((int)points);
     }
 
-    // Rejects the assignment's own invalid example: swimming submitted with a distance.
     private static bool CarriesOnlyItsOwnMeasurement(MetricKind metric, decimal? distance, string? duration, int? steps) =>
         metric switch
         {
