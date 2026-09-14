@@ -1,12 +1,4 @@
 #!/usr/bin/env bash
-# Shows what the app is doing, one request at a time.
-#
-#   ./logs.sh          every request, with the SQL it ran
-#   ./logs.sh short    one line per request: path, status, how long it took
-#   ./logs.sh off      back to quiet
-#
-# Request and SQL logging are off by default, so this switches them on, rebuilds the container
-# with them, and follows the output. Ctrl+C stops watching; the app keeps running.
 set -euo pipefail
 
 cd "$(dirname "$0")"

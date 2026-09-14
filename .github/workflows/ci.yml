@@ -16,7 +16,6 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # Warnings are errors (Directory.Build.props), so this step is the style gate as well.
       - run: dotnet build --configuration Release
 
       - run: dotnet test --configuration Release --no-build
@@ -36,14 +35,12 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
 
-      # npm 10 fails to resolve this dependency tree. See the README.
       - run: npm install --global npm@12
 
       - run: npm ci
 
       - run: npm run build
 
-      # Vitest runs in jsdom, so the suite needs no browser on the runner.
       - run: npm test
 
   image:
@@ -52,6 +49,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The image is the reviewer's path into the app, so a broken Dockerfile has to fail here
-      # rather than on their machine.
       - run: docker build --tag fitness-challenge .

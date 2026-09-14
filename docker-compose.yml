@@ -1,22 +1,13 @@
-# Compose reads .env from this folder on its own, so the Azure credentials live in one file that
-# is never committed. Without that file the app still runs and only the AI chat is switched off.
 services:
   app:
     build: .
     ports:
       - "8080:8080"
     environment:
-      # Double underscores are how .NET reads nested configuration from the environment, so these
-      # arrive as Coach:Endpoint, Coach:ApiKey and Coach:Deployment.
       Coach__Endpoint: ${COACH_ENDPOINT:-}
       Coach__ApiKey: ${COACH_API_KEY:-}
       Coach__Deployment: ${COACH_DEPLOYMENT:-}
-      # Demo data, written once into an empty database so the app opens on a live challenge.
       Seed: "true"
-      # Off by default, because every request would otherwise print four lines nobody reads.
-      # Turn either on for one run without editing this file:
-      #   LOG_REQUESTS=Information docker compose up -d
-      #   LOG_SQL=Information docker compose up -d
       Logging__LogLevel__Microsoft.AspNetCore: ${LOG_REQUESTS:-Warning}
       Logging__LogLevel__Microsoft.EntityFrameworkCore.Database.Command: ${LOG_SQL:-Warning}
     volumes:
