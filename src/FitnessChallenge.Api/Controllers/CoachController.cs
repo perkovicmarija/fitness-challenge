@@ -24,10 +24,6 @@ public class CoachController(
 
     private const int ActivitiesBeforeAPattern = 8;
 
-    private const int TieBreakPoint = 1;
-
-    private static int PointsToOvertake(int theirs, int mine) => theirs - mine + TieBreakPoint;
-
     [HttpGet]
     public async Task<ActionResult<CoachFactsResponse>> GetFacts(Guid id, CancellationToken cancellationToken)
     {
@@ -154,8 +150,8 @@ public class CoachController(
             _ => board.Count > 0 ? board[^1] : null,
         };
 
-        int? toPassNextRank = above is null ? null : PointsToOvertake(above.TotalPoints, myPoints);
-        int? toTakeTheLead = position == 0 || board.Count == 0 ? null : PointsToOvertake(board[0].TotalPoints, myPoints);
+        int? toPassNextRank = above is null ? null : RankGap.ToOvertake(above.TotalPoints, myPoints);
+        int? toTakeTheLead = position == 0 || board.Count == 0 ? null : RankGap.ToOvertake(board[0].TotalPoints, myPoints);
 
         int? leadOverNextRank = position == 0 && board.Count > 1 ? myPoints - board[1].TotalPoints : null;
 

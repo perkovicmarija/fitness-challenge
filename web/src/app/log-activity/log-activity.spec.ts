@@ -19,7 +19,7 @@ const RIVAL = '33333333-3333-3333-3333-333333333333';
 function entry(rank: number, userId: string, firstName: string, totalPoints: number): LeaderboardEntry {
   return {
     rank, userId, firstName, lastName: 'Miller', totalPoints,
-    previousRank: null, rankDelta: null, pointsToOvertake: rank === 1 ? null : 1,
+    rankDelta: null, pointsToOvertake: rank === 1 ? null : 1,
   };
 }
 

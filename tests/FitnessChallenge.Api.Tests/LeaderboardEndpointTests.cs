@@ -64,7 +64,6 @@ public class LeaderboardEndpointTests
 
         var dropped = board.Single(entry => entry.UserId == anna);
         Assert.Equal(2, dropped.Rank);
-        Assert.Equal(1, dropped.PreviousRank);
         Assert.Equal(-1, dropped.RankDelta);
     }
 
@@ -79,8 +78,7 @@ public class LeaderboardEndpointTests
 
         var board = (await client.GetFromJsonAsync<LeaderboardResponse>("/api/leaderboard"))!.Entries;
 
-        Assert.Null(board![0].PreviousRank);
-        Assert.Null(board[0].RankDelta);
+        Assert.Null(board![0].RankDelta);
     }
 
     [Fact]

@@ -19,7 +19,6 @@ export interface LeaderboardEntry {
   lastName: string;
   totalPoints: number;
 
-  previousRank: number | null;
   rankDelta: number | null;
 
   pointsToOvertake: number | null;

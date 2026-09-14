@@ -6,7 +6,6 @@ public sealed record LeaderboardEntryResponse(
     string FirstName,
     string LastName,
     int TotalPoints,
-    int? PreviousRank,
     int? RankDelta,
     int? PointsToOvertake);
 

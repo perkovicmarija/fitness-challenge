@@ -1,5 +1,6 @@
 using FitnessChallenge.Api.DTO;
 using FitnessChallenge.Api.Data;
+using FitnessChallenge.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +15,6 @@ public class LeaderboardController(
     TimeProvider clock) : ControllerBase
 {
     private static readonly TimeSpan TrendWindow = TimeSpan.FromDays(7);
-
-    private const int TieBreakPoint = 1;
 
     private static readonly TimeSpan WidestClientOffset = TimeSpan.FromDays(2);
 
@@ -41,9 +40,8 @@ public class LeaderboardController(
                     standing.FirstName,
                     standing.LastName,
                     standing.TotalPoints,
-                    previousRank,
                     previousRank - rank,
-                    index == 0 ? null : PointsToOvertake(current[index - 1].TotalPoints, standing.TotalPoints));
+                    index == 0 ? null : RankGap.ToOvertake(current[index - 1].TotalPoints, standing.TotalPoints));
             })
             .ToList();
 
@@ -52,8 +50,6 @@ public class LeaderboardController(
             await ActiveTodayAsync(cancellationToken),
             entries);
     }
-
-    private static int PointsToOvertake(int theirs, int mine) => theirs - mine + TieBreakPoint;
 
     private async Task<int> ActiveTodayAsync(CancellationToken cancellationToken)
     {

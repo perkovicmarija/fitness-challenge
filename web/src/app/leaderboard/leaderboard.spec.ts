@@ -18,7 +18,7 @@ function entry(
 ): LeaderboardEntry {
   return {
     rank, userId, firstName, lastName: surname, totalPoints,
-    previousRank: null, rankDelta: null, pointsToOvertake,
+    rankDelta: null, pointsToOvertake,
   };
 }
 
