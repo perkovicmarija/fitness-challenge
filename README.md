@@ -25,7 +25,10 @@ Application: http://localhost:4200
 
 ## AI Coach
 
-The AI Coach requires an environment configuration file.
+The chat needs an Azure OpenAI key — copy `.env.example` to `.env` and fill it in.
+
+Without one the screen still works: rank, gap and recommendation are calculated by the app.
+Only the chat box reports itself switched off.
 
 
 ## Tests

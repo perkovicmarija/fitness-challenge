@@ -45,6 +45,29 @@ public static class CoachPrompt
             briefing.AppendLine();
         }
 
+        AppendFacts(briefing, facts);
+
+        briefing.AppendLine(ask switch
+        {
+            Ask.RankChange =>
+                "Explain why their rank changed, in at most 45 words. Name what they earned and what the "
+                + "other competitor earned over the same 7 days, then the gap as it stands now.",
+            Ask.WeeklyRecap =>
+                "Summarise their last 7 days in at most 45 words: how the week compares to their usual, "
+                + "which sport carried it, how consistent they were, and where they stand now.",
+            _ => "How to reply:",
+        });
+
+        foreach (var rule in RulesFor(ask))
+        {
+            briefing.AppendLine($"- {rule}");
+        }
+
+        return briefing.ToString();
+    }
+
+    private static void AppendFacts(StringBuilder briefing, CoachFactsResponse facts)
+    {
         briefing.AppendLine("Facts about this competitor, computed by the app:");
 
         briefing.AppendLine(facts.Rank is null
@@ -122,24 +145,6 @@ public static class CoachPrompt
         }
 
         briefing.AppendLine();
-
-        briefing.AppendLine(ask switch
-        {
-            Ask.RankChange =>
-                "Explain why their rank changed, in at most 45 words. Name what they earned and what the "
-                + "other competitor earned over the same 7 days, then the gap as it stands now.",
-            Ask.WeeklyRecap =>
-                "Summarise their last 7 days in at most 45 words: how the week compares to their usual, "
-                + "which sport carried it, how consistent they were, and where they stand now.",
-            _ => "How to reply:",
-        });
-
-        foreach (var rule in RulesFor(ask))
-        {
-            briefing.AppendLine($"- {rule}");
-        }
-
-        return briefing.ToString();
     }
 
     private static IEnumerable<string> RulesFor(Ask ask)
