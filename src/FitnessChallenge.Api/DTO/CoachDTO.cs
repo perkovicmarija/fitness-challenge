@@ -22,6 +22,7 @@ public sealed record CoachFactsResponse(
     int? PointsToTakeTheLead,
 
     RankChangeResponse? RankChange,
+    GapOutlookResponse? Outlook,
 
     int ActiveDaysLastSevenDays,
     DayTotalResponse? BestDay,
@@ -40,6 +41,8 @@ public sealed record CoachFactsResponse(
 
     CoachEffortResponse? Recommended,
     IReadOnlyList<CoachSportResponse> Sports);
+
+public sealed record GapOutlookResponse(bool WithinReach, bool Unlikely, int PointsAtCurrentPace, int DaysLeft);
 
 public sealed record RankChangeResponse(
     int PreviousRank,

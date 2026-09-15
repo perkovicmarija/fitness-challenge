@@ -309,9 +309,10 @@ li.me {
   display: block;
   font-size: 11px;
   color: var(--text-muted);
+  font-weight: 400;
 }
 
-.points small.chase { color: var(--accent); }
+.points small.chase { color: var(--text-secondary); }
 
 .skeleton li {
   display: block;

@@ -89,15 +89,29 @@
       <h2 class="card-title">Recommended move</h2>
 
       <div class="pick">
-        <div class="what">
-          <strong>{{ pick.quantity.toLocaleString() }} <small>{{ pick.unit }}</small></strong>
-          <span>{{ pick.label }}</span>
-        </div>
+        @if (coach.outlook?.unlikely) {
+          <div class="what">
+            <strong>{{ coach.sports[0].averagePoints.toLocaleString() }} <small>pts</small></strong>
+            <span>a session of {{ pick.label.toLowerCase() }}</span>
+          </div>
 
-        <p class="closes">
-          Earns {{ coach.pointsToPassNextRank!.toLocaleString() }} points, which closes the current
-          gap to rank {{ coach.rank! - 1 }}.
-        </p>
+          <p class="closes">
+            The gap to rank {{ coach.rank! - 1 }} is {{ coach.pointsToPassNextRank!.toLocaleString() }}
+            points, and your usual pace earns about
+            {{ coach.outlook!.pointsAtCurrentPace.toLocaleString() }} in the
+            {{ coach.outlook!.daysLeft }} days left. Build the daily total instead.
+          </p>
+        } @else {
+          <div class="what">
+            <strong>{{ pick.quantity.toLocaleString() }} <small>{{ pick.unit }}</small></strong>
+            <span>{{ pick.label }}</span>
+          </div>
+
+          <p class="closes">
+            Earns {{ coach.pointsToPassNextRank!.toLocaleString() }} points, which closes the current
+            gap to rank {{ coach.rank! - 1 }}.
+          </p>
+        }
 
         <a class="btn-primary" routerLink="/log" [queryParams]="{ sport: pick.sport ?? '' }">
           Log {{ pick.label.toLowerCase() }} →

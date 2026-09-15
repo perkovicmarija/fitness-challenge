@@ -25,6 +25,7 @@ const facts: CoachFacts = {
   pointsToPassNextRank: 201,
   pointsToTakeTheLead: 201,
   rankChange: null,
+  outlook: null,
   activeDaysLastSevenDays: 5,
   bestDay: null,
   leadOverNextRank: null,

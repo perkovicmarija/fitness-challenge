@@ -49,19 +49,11 @@
         <dd>{{ mine.totalPoints.toLocaleString() }}</dd>
       </div>
 
-      @if (chase(); as target) {
-        <div>
-
-          <dt>Your next move</dt>
-          <dd class="gap">{{ target.points.toLocaleString() }} <small>pts</small></dd>
-          <p class="who">to #{{ mine.rank - 1 }} · {{ target.name }}</p>
-        </div>
-      } @else {
-        <div>
-          <dt>Position</dt>
-          <dd class="first">Leading</dd>
-        </div>
-      }
+      <div>
+        <dt>Your next move</dt>
+        <dd class="move" [class.first]="!chase()">{{ nextMove().label }}</dd>
+        <p class="who">{{ nextMove().detail }}</p>
+      </div>
     </dl>
 
     @if (change(); as moved) {

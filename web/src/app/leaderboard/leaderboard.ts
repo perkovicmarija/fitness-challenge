@@ -82,6 +82,32 @@ export class Leaderboard {
       : null;
   });
 
+  readonly nextMove = computed(() => {
+    const mine = this.me();
+
+    if (!mine) {
+      return { label: 'Get on the board', detail: 'One activity puts you on the leaderboard.' };
+    }
+
+    const target = this.chase();
+
+    if (!target) {
+      const behind = this.rows()[1];
+
+      return {
+        label: 'Protect your lead',
+        detail: behind
+          ? `You lead ${behind.firstName} by ${(mine.totalPoints - behind.totalPoints).toLocaleString()} pts.`
+          : 'Nobody is behind you yet.',
+      };
+    }
+
+    return {
+      label: mine.rank === 2 ? 'Take the lead' : `Catch #${mine.rank - 1}`,
+      detail: `${target.points.toLocaleString()} pts to overtake ${target.name}.`,
+    };
+  });
+
   readonly race = computed<Row[]>(() => {
     const mine = this.me();
 
@@ -164,10 +190,15 @@ function gapFor(
 
   const mine = entries[myRank - 1].totalPoints;
 
-  return entry.rank < myRank
+  if (entry.rank > myRank) {
+    return { text: `${(mine - entry.totalPoints).toLocaleString()} pts behind`, mine: false };
+  }
 
-    ? { text: `${(entry.totalPoints - mine + 1).toLocaleString()} pts to overtake`, mine: true }
-    : { text: `${(mine - entry.totalPoints).toLocaleString()} pts behind you`, mine: false };
+  const cost = (entry.totalPoints - mine + 1).toLocaleString();
+
+  return entry.rank === 1
+    ? { text: `${cost} pts to #1`, mine: true }
+    : { text: `${cost} pts to overtake`, mine: true };
 }
 
 function stableIndex(id: string, buckets: number): number {

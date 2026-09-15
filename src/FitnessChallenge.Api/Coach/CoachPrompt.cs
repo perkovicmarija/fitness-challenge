@@ -101,6 +101,24 @@ public static class CoachPrompt
             briefing.AppendLine($"- Their best single day in the last four weeks: {Points(best.Points)} points on {best.Date:D}.");
         }
 
+        if (facts.Outlook is { } outlook)
+        {
+            briefing.AppendLine(outlook switch
+            {
+                { WithinReach: true } =>
+                    $"- At their usual pace they would earn about {Points(outlook.PointsAtCurrentPace)} points in the "
+                    + $"{outlook.DaysLeft} days left, which is more than the gap. The gap is within reach.",
+                { Unlikely: false } =>
+                    $"- At their usual pace they would earn about {Points(outlook.PointsAtCurrentPace)} points in the "
+                    + $"{outlook.DaysLeft} days left, which is less than the gap. Closing it needs more than their "
+                    + "usual effort, but it is not out of range.",
+                _ =>
+                    $"- At their usual pace they would earn about {Points(outlook.PointsAtCurrentPace)} points in the "
+                    + $"{outlook.DaysLeft} days left. The gap is several times that, so closing it before the "
+                    + "challenge ends is unlikely. Say so plainly and give them a goal they can actually reach.",
+            });
+        }
+
         if (facts.RankChange is { } change)
         {
             briefing.AppendLine(
@@ -149,6 +167,10 @@ public static class CoachPrompt
 
     private static IEnumerable<string> RulesFor(Ask ask)
     {
+        yield return "Do not present a gap as easy when the figures say otherwise. Where the briefing "
+            + "says the gap is unlikely to close, say that plainly and offer a goal that is reachable — "
+            + "holding position, a daily total, more active days — rather than a quantity nobody will do.";
+
         yield return "Never say what will happen. You were not told what anybody else will log, so no "
             + "reply may contain \"will\", \"likely\", \"should hold\" or \"you'll\" about their "
             + "position. Describe what an effort is worth, never what it achieves.";

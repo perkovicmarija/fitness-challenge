@@ -96,6 +96,13 @@ export interface CoachSport {
   averagePoints: number;
 }
 
+export interface GapOutlook {
+  withinReach: boolean;
+  unlikely: boolean;
+  pointsAtCurrentPace: number;
+  daysLeft: number;
+}
+
 export interface RankChange {
   previousRank: number;
   currentRank: number;
@@ -118,6 +125,7 @@ export interface CoachFacts {
   pointsToTakeTheLead: number | null;
 
   rankChange: RankChange | null;
+  outlook: GapOutlook | null;
   activeDaysLastSevenDays: number;
   bestDay: DayTotal | null;
   leadOverNextRank: number | null;

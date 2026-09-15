@@ -74,7 +74,8 @@ describe('Leaderboard', () => {
 
     expect(text).toContain('#2');
 
-    expect(text).toContain('to #1 · Anna Wilson');
+    expect(text).toContain('Take the lead');
+    expect(text).toContain('61 pts to overtake Anna Wilson.');
 
     expect(text).toContain('61');
 
@@ -85,7 +86,8 @@ describe('Leaderboard', () => {
   it('tells the leader they are leading rather than showing a gap', async () => {
     const fixture = await open('11111111-1111-1111-1111-111111111111');
 
-    expect(fixture.nativeElement.textContent).toContain('Leading');
+    expect(fixture.nativeElement.textContent).toContain('Protect your lead');
+    expect(fixture.nativeElement.textContent).toContain('You lead Emma by 60 pts.');
     expect(fixture.nativeElement.querySelector('.cta')).toBeNull();
   });
 
@@ -175,7 +177,7 @@ describe('Leaderboard', () => {
     const fixture = await open(ME, far);
     const gaps = fixture.componentInstance.rows().map(row => row.gap?.text ?? null);
 
-    expect(gaps[0]).toBe('401 pts to overtake');
+    expect(gaps[0]).toBe('401 pts to #1');
     expect(gaps[1]).toBeNull();
     expect(gaps[2]).toBeNull();
   });

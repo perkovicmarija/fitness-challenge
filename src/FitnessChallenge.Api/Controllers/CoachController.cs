@@ -175,15 +175,18 @@ public class CoachController(
 
         var strongest = sports.FirstOrDefault(sport => sport.Sessions > 0);
 
+        var challenge = await challenges.CurrentAsync(cancellationToken);
+
         return new CoachFactsResponse(
             id,
-            await challenges.CurrentAsync(cancellationToken),
+            challenge,
             position >= 0 ? position + 1 : null,
             competitors,
             myPoints,
             toPassNextRank,
             toTakeTheLead,
             await RankChangeAsync(id, board, position, cancellationToken),
+            Outlook(toPassNextRank, WeeklyAverage(myPoints, startedUtc, nowUtc), challenge),
             await ActiveDaysAsync(id, nowUtc, cancellationToken),
             await BestDayAsync(id, nowUtc, cancellationToken),
             leadOverNextRank,
@@ -220,6 +223,23 @@ public class CoachController(
             })
             .OrderByDescending(sport => sport.Points)
             .ToList();
+    }
+
+    private static GapOutlookResponse? Outlook(int? gap, int weeklyAverage, ChallengeResponse? challenge)
+    {
+        if (gap is null || challenge is null || challenge.HasEnded)
+        {
+            return null;
+        }
+
+        var days = challenge.DaysLeft;
+        var atCurrentPace = (int)Math.Round(weeklyAverage / 7d * days);
+
+        return new GapOutlookResponse(
+            gap <= atCurrentPace,
+            atCurrentPace <= 0 || gap > atCurrentPace * 3,
+            atCurrentPace,
+            days);
     }
 
     private async Task<RankChangeResponse?> RankChangeAsync(
